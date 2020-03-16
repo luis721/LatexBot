@@ -1,4 +1,12 @@
+import logging
 from sympy import preview
+
+
+# Enable logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 # TODO usar objeto de buffer en lugar de guardar el archivo
 
@@ -36,3 +44,7 @@ def inline(update, context):
     except Exception as e:
         print(e)
         update.message.reply_text("Disculpa, no he logrado procesar esta ecuación.")
+
+
+def error(update, context):
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
