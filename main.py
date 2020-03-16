@@ -16,9 +16,9 @@ def main():
 
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('saludo', saludo))
     dp.add_handler(CommandHandler('inline', inline))
     dp.add_handler(CommandHandler('latex', latex))
-    dp.add_handler(CommandHandler('saludo', saludo))
 
     updater.start_polling()
     updater.idle()

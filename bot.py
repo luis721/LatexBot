@@ -1,20 +1,23 @@
 from sympy import preview
 
+# TODO usar objeto de buffer en lugar de guardar el archivo
+
 
 def start(update, context):
     update.message.reply_text('Bienvenido a este bot.')
 
 
 def saludo(update, context):
-    nombre = update.message.forward_from.first_name
+    nombre = update.message.from_user.first_name
     mensaje = 'Hola, {}. ¿Cómo estás? :-)'.format(nombre)
     update.message.reply_text(mensaje)
 
 
 def latex(update, context):
+    chat_id = update.message.chat.id
+    texto = update.message.text
+    texto = texto[texto.find(' '):]
     try:
-        chat_id = update.message.chat.id
-        texto = update.message.text[7:]
         equation = r'$${}$$'.format(texto)
         preview(equation, viewer='file', filename='test.png', euler=False)
         context.bot.send_photo(chat_id=chat_id, photo=open('test.png', 'rb'))
@@ -24,7 +27,8 @@ def latex(update, context):
 
 def inline(update, context):
     chat_id = update.message.chat.id
-    texto = update.message.text[8:]
+    texto = update.message.text
+    texto = texto[texto.find(' '):]
     equation = r'${}$'.format(texto)
     try:
         preview(equation, viewer='file', filename='test.png', euler=False)
