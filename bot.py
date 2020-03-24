@@ -1,4 +1,6 @@
 import logging
+
+from PIL import Image
 from sympy import preview
 
 
@@ -21,14 +23,27 @@ def saludo(update, context):
     update.message.reply_text(mensaje)
 
 
+def image_resize(file, output='equation.png'):
+    image = Image.open(file)
+    width, height = image.size
+    white = Image.new('RGB', (width+64, int(3*width/4)), (255, 255, 255))
+    white.paste(image, (32, 3*width//8-height//2))
+    white.save(output)
+
+
 def latex(update, context):
     chat_id = update.message.chat.id
     texto = update.message.text
+    if len(texto) < len('/latex '):
+        update.message.reply_text("Escribe una ecuación junto al comando.")
+        return
+
     texto = texto[texto.find(' '):]
     try:
         equation = r'$${}$$'.format(texto)
         preview(equation, viewer='file', filename='test.png', euler=False)
-        context.bot.send_photo(chat_id=chat_id, photo=open('test.png', 'rb'))
+        image_resize('test.png')
+        context.bot.send_photo(chat_id=chat_id, photo=open('equation.png', 'rb'))
     except Exception as e:
         update.message.reply_text("Disculpa, no he logrado procesar esta ecuación.")
 
@@ -36,11 +51,16 @@ def latex(update, context):
 def inline(update, context):
     chat_id = update.message.chat.id
     texto = update.message.text
+    if len(texto) < len('/inline '):
+        update.message.reply_text("Escribe una ecuación junto al comando.")
+        return
+
     texto = texto[texto.find(' '):]
     equation = r'${}$'.format(texto)
     try:
         preview(equation, viewer='file', filename='test.png', euler=False)
-        context.bot.send_photo(chat_id=chat_id, photo=open('test.png', 'rb'))
+        image_resize('test.png')
+        context.bot.send_photo(chat_id=chat_id, photo=open('equation.png', 'rb'))
     except Exception as e:
         print(e)
         update.message.reply_text("Disculpa, no he logrado procesar esta ecuación.")
